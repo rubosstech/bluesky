@@ -28,7 +28,6 @@ import {Provider as UnreadNotifsProvider} from '#/state/queries/notifications/un
 import {
   Provider as SessionProvider,
   SessionAccount,
-  useAgent,
   useSession,
   useSessionApi,
 } from '#/state/session'
@@ -51,8 +50,6 @@ import I18nProvider from './locale/i18nProvider'
 import {listenSessionDropped} from './state/events'
 
 function InnerApp() {
-  console.log(useAgent(), useSession(), useSessionApi())
-  console.log('hi')
   const [isReady, setIsReady] = React.useState(false)
   const {currentAccount} = useSession()
   const {resumeSession} = useSessionApi()

@@ -8,7 +8,7 @@
   "packageManager": "yarn@1.22.19",
   "scripts": {
     "prepare": "is-ci || husky install",
-    "postinstall": "patch-package && ./node_modules/.bin/rn-nodeify --hack --install --yarn && yarn intl:compile",
+    "postinstall": "patch-package && ./node_modules/.bin/rn-nodeify --hack --install stream --yarn && yarn intl:compile",
     "prebuild": "expo prebuild --clean",
     "android": "expo run:android",
     "ios": "expo run:ios",
@@ -223,7 +223,7 @@
     "rn-tourguide": "bluesky-social/rn-tourguide",
     "sentry-expo": "~7.0.1",
     "statsig-react-native-expo": "^4.6.1",
-    "stream-browserify": "^1.0.0",
+    "stream-browserify": "^3.0.0",
     "string_decoder": "~0.10.25",
     "timers-browserify": "^1.0.1",
     "tippy.js": "^6.3.7",

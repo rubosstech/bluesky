@@ -10,7 +10,7 @@
       "platform/*": ["./src/platform/*"],
       "state/*": ["./src/state/*"],
       "view/*": ["./src/view/*"],
-      "crypto": ["./src/platform/crypto.ts"]
+      "crypto": ["./src/platform/crypto.ts"],
     }
   },
   "exclude": ["bskyweb", "bskyembed", "web-build"]

@@ -51,7 +51,8 @@ import I18nProvider from './locale/i18nProvider'
 import {listenSessionDropped} from './state/events'
 
 function InnerApp() {
-  new VerusdRpcInterface('', '', {})
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const client = new VerusdRpcInterface('', '', {})
   const [isReady, setIsReady] = React.useState(false)
   const {currentAccount} = useSession()
   const {resumeSession} = useSessionApi()

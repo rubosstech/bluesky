@@ -27,6 +27,22 @@ module.exports = async function (env, argv) {
     ...(config.module.rules || []),
     reactNativeWebWebviewConfiguration,
   ]
+
+  // Certain asset rules were picking up javascript files when they shouldn't
+  // This is a hack to exclude them from the asset rules
+  config.module.rules = config.module.rules.map(rule => {
+    console.log(rule)
+    if (rule.oneOf instanceof Array) {
+      rule.oneOf[rule.oneOf.length - 1].exclude = [
+        /\.(js|mjs|jsx|cjs|ts|tsx)$/,
+        /\.html$/,
+        /\.json$/,
+      ]
+    }
+
+    return rule
+  })
+
   if (env.mode === 'development') {
     config.plugins.push(new ReactRefreshWebpackPlugin())
   }
@@ -43,20 +59,19 @@ module.exports = async function (env, argv) {
     )
   }
 
-  config.resolve = {
-    ...config.resolve,
-    fallback: {
-      ...config.resolve.fallback,
-      stream: require.resolve('stream-browserify'),
-      buffer: require.resolve('buffer'),
-    },
+  config.resolve.fallback = {
+    ...(config.resolve.fallback || {}),
+    stream: require.resolve('stream-browserify'),
+    buffer: require.resolve('buffer'),
   }
+
+  config.resolve.extensions = [...(config.resolve.extensions || []), '.cjs']
 
   config.plugins.push(
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
     }),
   )
-
+  console.log(config)
   return config
 }

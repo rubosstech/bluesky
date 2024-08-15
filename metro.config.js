@@ -6,6 +6,10 @@ cfg.resolver.sourceExts = process.env.RN_SRC_EXT
   ? process.env.RN_SRC_EXT.split(',').concat(cfg.resolver.sourceExts)
   : cfg.resolver.sourceExts
 
+cfg.resolver.sourceExts.push('cjs')
+
+cfg.resolver.assetExts = cfg.resolver.assetExts.filter(e => e !== 'cjs')
+
 cfg.transformer.getTransformOptions = async () => ({
   transform: {
     experimentalImportSupport: true,

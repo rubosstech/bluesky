@@ -7,6 +7,7 @@ import {RootSiblingParent} from 'react-native-root-siblings'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
 import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
+import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 
 import {useIntentHandler} from '#/lib/hooks/useIntentHandler'
 import {QueryProvider} from '#/lib/react-query'
@@ -50,6 +51,8 @@ import I18nProvider from './locale/i18nProvider'
 import {listenSessionDropped} from './state/events'
 
 function InnerApp() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const client = new VerusdRpcInterface('', '', {})
   const [isReady, setIsReady] = React.useState(false)
   const {currentAccount} = useSession()
   const {resumeSession} = useSessionApi()

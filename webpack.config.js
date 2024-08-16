@@ -42,12 +42,6 @@ module.exports = async function (env, argv) {
     },
   })
 
-  // Force Webpack to treat bs58check as a CommonJS module
-  config.resolve.alias = {
-    ...config.resolve.alias,
-    bs58check: require.resolve('bs58check'),
-  }
-
   if (env.mode === 'development') {
     config.plugins.push(new ReactRefreshWebpackPlugin())
   }
@@ -64,13 +58,16 @@ module.exports = async function (env, argv) {
     )
   }
 
-  config.resolve = {
-    ...config.resolve,
-    fallback: {
-      ...config.resolve.fallback,
-      stream: require.resolve('stream-browserify'),
-      buffer: require.resolve('buffer'),
-    },
+  // Force Webpack to treat bs58check as a CommonJS module
+  config.resolve.alias = {
+    ...(config.resolve.alias || {}),
+    bs58check: require.resolve('bs58check'),
+  }
+
+  config.resolve.fallback = {
+    ...(config.resolve.fallback || {}),
+    buffer: require.resolve('buffer'),
+    stream: require.resolve('stream-browserify'),
   }
 
   config.plugins.push(
@@ -79,6 +76,5 @@ module.exports = async function (env, argv) {
     }),
   )
 
-  console.log(config)
   return config
 }

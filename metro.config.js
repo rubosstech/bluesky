@@ -28,6 +28,4 @@ cfg.transformer.getTransformOptions = async () => ({
 
 cfg.resolver.extraNodeModules = require('node-libs-react-native')
 
-console.log(cfg)
-
 module.exports = cfg

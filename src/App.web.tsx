@@ -7,7 +7,6 @@ import {RootSiblingParent} from 'react-native-root-siblings'
 import {SafeAreaProvider} from 'react-native-safe-area-context'
 import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
-import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 
 import {useIntentHandler} from '#/lib/hooks/useIntentHandler'
 import {QueryProvider} from '#/lib/react-query'
@@ -38,6 +37,7 @@ import {Provider as LoggedOutViewProvider} from '#/state/shell/logged-out'
 import {Provider as ProgressGuideProvider} from '#/state/shell/progress-guide'
 import {Provider as SelectedFeedProvider} from '#/state/shell/selected-feed'
 import {Provider as StarterPackProvider} from '#/state/shell/starter-pack'
+import {Provider as VerusSessionProvider, useAgent} from '#/state/verus_session'
 import * as Toast from '#/view/com/util/Toast'
 import {ToastContainer} from '#/view/com/util/Toast.web'
 import {Shell} from '#/view/shell/index'
@@ -51,8 +51,7 @@ import I18nProvider from './locale/i18nProvider'
 import {listenSessionDropped} from './state/events'
 
 function InnerApp() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const client = new VerusdRpcInterface('', '', {})
+  console.log(useAgent())
   const [isReady, setIsReady] = React.useState(false)
   const {currentAccount} = useSession()
   const {resumeSession} = useSessionApi()
@@ -149,27 +148,29 @@ function App() {
    */
   return (
     <A11yProvider>
-      <SessionProvider>
-        <ShellStateProvider>
-          <PrefsStateProvider>
-            <InvitesStateProvider>
-              <ModalStateProvider>
-                <DialogStateProvider>
-                  <LightboxStateProvider>
-                    <I18nProvider>
-                      <PortalProvider>
-                        <StarterPackProvider>
-                          <InnerApp />
-                        </StarterPackProvider>
-                      </PortalProvider>
-                    </I18nProvider>
-                  </LightboxStateProvider>
-                </DialogStateProvider>
-              </ModalStateProvider>
-            </InvitesStateProvider>
-          </PrefsStateProvider>
-        </ShellStateProvider>
-      </SessionProvider>
+      <VerusSessionProvider>
+        <SessionProvider>
+          <ShellStateProvider>
+            <PrefsStateProvider>
+              <InvitesStateProvider>
+                <ModalStateProvider>
+                  <DialogStateProvider>
+                    <LightboxStateProvider>
+                      <I18nProvider>
+                        <PortalProvider>
+                          <StarterPackProvider>
+                            <InnerApp />
+                          </StarterPackProvider>
+                        </PortalProvider>
+                      </I18nProvider>
+                    </LightboxStateProvider>
+                  </DialogStateProvider>
+                </ModalStateProvider>
+              </InvitesStateProvider>
+            </PrefsStateProvider>
+          </ShellStateProvider>
+        </SessionProvider>
+      </VerusSessionProvider>
     </A11yProvider>
   )
 }

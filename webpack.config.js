@@ -19,29 +19,34 @@ const reactNativeWebWebviewConfiguration = {
 
 module.exports = async function (env, argv) {
   let config = await createExpoWebpackConfigAsync(env, argv)
+
   config = withAlias(config, {
     'react-native$': 'react-native-web',
     'react-native-webview': 'react-native-web-webview',
   })
+
   config.module.rules = [
     ...(config.module.rules || []),
     reactNativeWebWebviewConfiguration,
   ]
 
-  // Certain asset rules were picking up javascript files when they shouldn't
-  // This is a hack to exclude them from the asset rules
-  config.module.rules = config.module.rules.map(rule => {
-    console.log(rule)
-    if (rule.oneOf instanceof Array) {
-      rule.oneOf[rule.oneOf.length - 1].exclude = [
-        /\.(js|mjs|jsx|cjs|ts|tsx)$/,
-        /\.html$/,
-        /\.json$/,
-      ]
-    }
-
-    return rule
+  // Add support for .cjs files
+  config.module.rules.push({
+    test: /\.cjs$/,
+    type: 'javascript/auto',
+    use: {
+      loader: 'babel-loader',
+      options: {
+        plugins: ['@babel/plugin-transform-modules-commonjs'],
+      },
+    },
   })
+
+  // Force Webpack to treat bs58check as a CommonJS module
+  config.resolve.alias = {
+    ...config.resolve.alias,
+    bs58check: require.resolve('bs58check'),
+  }
 
   if (env.mode === 'development') {
     config.plugins.push(new ReactRefreshWebpackPlugin())
@@ -59,19 +64,21 @@ module.exports = async function (env, argv) {
     )
   }
 
-  config.resolve.fallback = {
-    ...(config.resolve.fallback || {}),
-    stream: require.resolve('stream-browserify'),
-    buffer: require.resolve('buffer'),
+  config.resolve = {
+    ...config.resolve,
+    fallback: {
+      ...config.resolve.fallback,
+      stream: require.resolve('stream-browserify'),
+      buffer: require.resolve('buffer'),
+    },
   }
-
-  config.resolve.extensions = [...(config.resolve.extensions || []), '.cjs']
 
   config.plugins.push(
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
     }),
   )
+
   console.log(config)
   return config
 }

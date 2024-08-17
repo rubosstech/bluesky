@@ -12,6 +12,8 @@ export function createPublicAgent() {
 }
 
 export class VerusAgent {
+  chain: string
+  baseUrl: string
   interface: VerusdRpcInterface
 
   static publicAgent(baseUrl: string = DEFAULT) {
@@ -19,6 +21,16 @@ export class VerusAgent {
   }
 
   constructor(chain: string, baseUrl: string = DEFAULT_URL) {
+    this.chain = chain
+    this.baseUrl = baseUrl
     this.interface = new VerusdRpcInterface(chain, baseUrl, {})
+  }
+
+  listPosts(..._params: unknown[]) {
+    return null
+  }
+
+  getPost(..._params: unknown[]) {
+    return null
   }
 }

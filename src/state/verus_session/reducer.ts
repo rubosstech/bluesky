@@ -12,18 +12,16 @@ export type Action =
     }
   | {
       type: 'switched-to-account'
-      agent: VerusAgent
+      newAgent: VerusAgent
     }
   | {
       type: 'removed-account'
-      agent: VerusAgent
     }
   | {
       type: 'logged-out'
     }
   | {
       type: 'synced-accounts'
-      agent: VerusAgent
     }
 
 function createPublicAgentState(): AgentState {

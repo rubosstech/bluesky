@@ -1,3 +1,4 @@
+import {DEFAULT} from '@sentry/react-native/dist/js/tracing'
 import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 
 const DEFAULT_URL = ['test', 'development'].includes(
@@ -7,5 +8,17 @@ const DEFAULT_URL = ['test', 'development'].includes(
   : 'https://api.verus.services'
 
 export function createPublicAgent() {
-  return new VerusdRpcInterface('', DEFAULT_URL, {})
+  return VerusAgent.publicAgent()
+}
+
+export class VerusAgent {
+  interface: VerusdRpcInterface
+
+  static publicAgent(baseUrl: string = DEFAULT) {
+    return new VerusAgent('', baseUrl)
+  }
+
+  constructor(chain: string, baseUrl: string = DEFAULT_URL) {
+    this.interface = new VerusdRpcInterface(chain, baseUrl, {})
+  }
 }

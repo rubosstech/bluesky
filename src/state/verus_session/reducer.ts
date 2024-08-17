@@ -1,31 +1,29 @@
-import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
-
-import {createPublicAgent} from './agent'
+import {createPublicAgent, VerusAgent} from './agent'
 import {wrapAgentReducerForLogging} from './logging'
 
-export type AgentState = {agent: VerusdRpcInterface}
+export type AgentState = {agent: VerusAgent}
 
 export type State = {currentAgentState: AgentState}
 
 export type Action =
   | {
       type: 'received-agent-event'
-      client: VerusdRpcInterface
+      agent: VerusAgent
     }
   | {
       type: 'switched-to-account'
-      client: VerusdRpcInterface
+      agent: VerusAgent
     }
   | {
       type: 'removed-account'
-      client: VerusdRpcInterface
+      agent: VerusAgent
     }
   | {
       type: 'logged-out'
     }
   | {
       type: 'synced-accounts'
-      client: VerusdRpcInterface
+      agent: VerusAgent
     }
 
 function createPublicAgentState(): AgentState {

@@ -1,9 +1,10 @@
 import React from 'react'
-import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 
+import {VerusAgent} from './agent'
+import {addSessionDebugLog} from './logging'
 import {getInitialState, reducer} from './reducer'
 
-const AgentContext = React.createContext<VerusdRpcInterface | null>(null)
+const AgentContext = React.createContext<VerusAgent | null>(null)
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function useOneTaskAtATime() {
@@ -22,7 +23,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
   // const cancelPendingTask = useOneTaskAtATime()
   const [state, _dispatch] = React.useReducer(reducer, null, () => {
     const initialState = getInitialState([])
-    // !GH - TODO - logging
+    addSessionDebugLog({type: 'reducer:init', state: initialState})
     return initialState
   })
 
@@ -33,7 +34,7 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
   )
 }
 
-export function useAgent(): VerusdRpcInterface {
+export function useAgent(): VerusAgent {
   const agent = React.useContext(AgentContext)
   if (!agent) {
     throw Error('useAgent() must be below <Provider>.')

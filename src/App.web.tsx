@@ -37,7 +37,7 @@ import {Provider as LoggedOutViewProvider} from '#/state/shell/logged-out'
 import {Provider as ProgressGuideProvider} from '#/state/shell/progress-guide'
 import {Provider as SelectedFeedProvider} from '#/state/shell/selected-feed'
 import {Provider as StarterPackProvider} from '#/state/shell/starter-pack'
-import {Provider as VerusSessionProvider, useAgent} from '#/state/verus_session'
+import {Provider as VerusSessionProvider} from '#/state/verus_session'
 import * as Toast from '#/view/com/util/Toast'
 import {ToastContainer} from '#/view/com/util/Toast.web'
 import {Shell} from '#/view/shell/index'
@@ -51,7 +51,6 @@ import I18nProvider from './locale/i18nProvider'
 import {listenSessionDropped} from './state/events'
 
 function InnerApp() {
-  console.log(useAgent())
   const [isReady, setIsReady] = React.useState(false)
   const {currentAccount} = useSession()
   const {resumeSession} = useSessionApi()

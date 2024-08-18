@@ -26,10 +26,10 @@ export class VerusAgent {
   }
 
   listPosts(..._params: unknown[]) {
-    return null
+    return {}
   }
 
   getPost(..._params: unknown[]) {
-    return null
+    return {}
   }
 }

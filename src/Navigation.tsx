@@ -14,6 +14,7 @@ import {
   NavigationContainer,
   StackActions,
 } from '@react-navigation/native'
+import {useQuery} from '@tanstack/react-query'
 
 import {timeout} from 'lib/async/timeout'
 import {useColorSchemeStyle} from 'lib/hooks/useColorSchemeStyle'
@@ -58,12 +59,14 @@ import {MessagesConversationScreen} from './screens/Messages/Conversation'
 import {MessagesScreen} from './screens/Messages/List'
 import {MessagesSettingsScreen} from './screens/Messages/Settings'
 import {useModalControls} from './state/modals'
+import {STALE} from './state/queries'
 import {useUnreadNotifications} from './state/queries/notifications/unread'
 import {useSession} from './state/session'
 import {
   shouldRequestEmailConfirmation,
   snoozeEmailConfirmationPrompt,
 } from './state/shell/reminders'
+import {useAgent} from './state/verus_session'
 import {AccessibilitySettingsScreen} from './view/screens/AccessibilitySettings'
 import {CommunityGuidelinesScreen} from './view/screens/CommunityGuidelines'
 import {CopyrightPolicyScreen} from './view/screens/CopyrightPolicy'
@@ -616,6 +619,17 @@ const LINKING = {
 }
 
 function RoutesContainer({children}: React.PropsWithChildren<{}>) {
+  const verusAgent = useAgent()
+  // !SK - Can test functions just by viewing the logs here.
+  const response = useQuery({
+    staleTime: STALE.MINUTES.ONE,
+    queryKey: ['foo', 'bar'],
+    async queryFn() {
+      return verusAgent.getPost()
+    },
+    enabled: true,
+  })
+  console.log('Fake Query:', response)
   const theme = useColorSchemeStyle(DefaultTheme, DarkTheme)
   const {currentAccount} = useSession()
   const {openModal} = useModalControls()

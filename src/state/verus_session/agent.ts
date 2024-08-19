@@ -24,6 +24,8 @@ export class VerusAgent {
     this.chain = chain
     this.baseUrl = baseUrl
     this.interface = new VerusdRpcInterface(chain, baseUrl, {})
+    // !GH - Is the rpc client enough or do we need access to https://github.com/VerusCoin/verusid-ts-client
+    // as well?
   }
 
   listPosts(..._params: unknown[]) {
@@ -31,6 +33,7 @@ export class VerusAgent {
   }
 
   getPost(..._params: unknown[]) {
+    // This is just a test query to prove that the interface works
     return this.interface.getBlock('0')
   }
 }

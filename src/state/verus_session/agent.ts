@@ -1,8 +1,9 @@
 import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 
-const DEFAULT_URL = ['test', 'development'].includes(
-  process.env.NODE_ENV as any,
-)
+import {IS_DEV} from '#/env'
+
+const DEFAULT_CHAIN = IS_DEV ? 'VRSCTEST' : 'VRSC'
+const DEFAULT_URL = IS_DEV
   ? 'https://api.verustest.net'
   : 'https://api.verus.services'
 
@@ -16,7 +17,7 @@ export class VerusAgent {
   interface: VerusdRpcInterface
 
   static publicAgent(baseUrl: string = DEFAULT_URL) {
-    return new VerusAgent('', baseUrl)
+    return new VerusAgent(DEFAULT_CHAIN, baseUrl)
   }
 
   constructor(chain: string, baseUrl: string = DEFAULT_URL) {
@@ -30,6 +31,6 @@ export class VerusAgent {
   }
 
   getPost(..._params: unknown[]) {
-    return {}
+    return this.interface.getBlock('0')
   }
 }

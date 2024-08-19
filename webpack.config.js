@@ -75,6 +75,7 @@ module.exports = async function (env, argv) {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process/browser',
+      crypto: 'crypto-browserify',
     }),
   )
 

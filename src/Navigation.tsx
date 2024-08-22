@@ -625,7 +625,7 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
     staleTime: STALE.MINUTES.ONE,
     queryKey: ['foo', 'bar'],
     async queryFn() {
-      return verusAgent.getPost()
+      return verusAgent.getMostRecentPost("MnbvDemo2@")
     },
     enabled: true,
   })

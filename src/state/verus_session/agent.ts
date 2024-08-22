@@ -1,6 +1,7 @@
 // @ts-ignore Ignore this error since the types aren't defined
 import * as crypto from 'crypto-browserify'
 import {
+  ContentMultiMap,
   IDENTITY_VIEW,
   LOGIN_CONSENT_WEBHOOK_VDXF_KEY,
   LoginConsentChallenge,
@@ -112,6 +113,33 @@ export class VerusAgent {
 
   async getPost(..._params: unknown[]) {
     // This is just a test query to prove that the interface works
-    return await this.rpcInterface.getBlock('0')
+    return await this.rpcInterface.getIdentity('MnbvDemo2@')
+  }
+
+  async getMostRecentPost(identity: string) {
+    let resp = await this.rpcInterface.getIdentity(identity)
+    let contentmultimap = resp.result?.identity.contentmultimap
+
+    if (contentmultimap === undefined) {
+      return contentmultimap
+    }
+
+    // This is simple parsing now. It may need a recursive structure for 
+    // handling the map values in map values.
+    // Check if the multimap is an array of values.
+    if (Array.isArray(contentmultimap)) {
+      return contentmultimap
+    } else {
+      // This is the i-address of vrsc::identity.post
+      let postKey = "iPwPUbWTh5hFG4fpnAymPz4t2b74263ukZ"
+      let postContent = contentmultimap[postKey]
+      // Check if there are several values for that post.
+      if (Array.isArray(postContent)) {
+        // Decode the string from hex to regular text.
+        return Buffer.from(postContent[0], 'hex').toString('binary')
+      } else {
+        return postContent
+      }
+    }
   }
 }

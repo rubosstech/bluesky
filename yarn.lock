@@ -8029,7 +8029,7 @@
     "@babel/types" "^7.20.7"
 
 "@types/bn.js@*":
-  version "5.1.5"
+  version "5.2.1"
   resolved "https://registry.yarnpkg.com/@types/bn.js/-/bn.js-5.1.5.tgz#2e0dacdcce2c0f16b905d20ff87aedbc6f7b4bf0"
   integrity sha512-V46N0zwKRF5Q00AZ6hWtN0T8gGmDUaUzLWQvHFo5yThtVwK/VCenFY3wXVbOvNfajEpsTfQM4IN9k/d6gUVX3A==
   dependencies:
@@ -23096,6 +23096,7 @@ vary@^1, vary@~1.1.2:
     "@bitgo/utxo-lib" "https://github.com/VerusCoin/BitGoJS.git#c674cc555ec8bbb10c93e43b7c72ca267a22ffc3"
     axios "1.6.5"
     bignumber.js "9.1.0"
+    bn.js "5.2.1"
     verus-typescript-primitives "https://github.com/VerusCoin/verus-typescript-primitives.git"
     verusd-rpc-ts-client "https://github.com/VerusCoin/verusd-rpc-ts-client.git"
 

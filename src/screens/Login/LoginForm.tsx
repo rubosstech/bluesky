@@ -179,6 +179,8 @@ export const LoginForm = ({
     <FormContainer testID="loginForm" titleText={<Trans>Sign in</Trans>}>
       <Button
         label="test verus login"
+        // add black text style
+        style={[t.atoms.bg_contrast_100]}
         onPress={async () =>
           console.log(await verusAgent.createLoginConsent())
         }>

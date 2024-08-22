@@ -3,6 +3,8 @@ import * as crypto from 'crypto-browserify'
 import {
   IDENTITY_VIEW,
   LOGIN_CONSENT_WEBHOOK_VDXF_KEY,
+  // LOGIN_CONSENT_CHALLENGE_VDXF_KEY,
+  // I_ADDR_VERSION,
   LoginConsentChallenge,
   RedirectUri,
   RequestedPermission,
@@ -12,6 +14,7 @@ import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 import {VerusIdInterface} from 'verusid-ts-client'
 
 import {IS_DEV} from '#/env'
+// import { verify } from 'crypto'
 
 const DEFAULT_CHAIN = IS_DEV ? 'VRSCTEST' : 'VRSC'
 const DEFAULT_URL = IS_DEV
@@ -49,9 +52,11 @@ export class VerusAgent {
     const oldStackTraceLimit = Error.stackTraceLimit
     Error.stackTraceLimit = 1000
     console.log(crypto, toBase58Check)
-    // const randID = Buffer.from(crypto.randomBytes(20))
-    // const iaddressID = toBase58Check(randID, 2)
-    const iaddressID = 'i8koJHX4v2vgwMr9VwEE1KdXgzNztKW3yt'
+    const randID = Buffer.from(crypto.randomBytes(20))
+    console.log(randID)
+    const iaddressID = toBase58Check(randID, 102)
+    console.log(iaddressID)
+    // const iaddressID = 'i8koJHX4v2vgwMr9VwEE1KdXgzNztKW3yt'
 
     console.log('creating challenge')
     const challenge = new LoginConsentChallenge({
@@ -65,17 +70,20 @@ export class VerusAgent {
       ],
       created_at: Number((Date.now() / 1000).toFixed(0)),
     })
+    console.log(challenge)
     console.log('challenge created')
-    const signingId = 'BlueskyTest@'
-    // This is not the correct value
-    // const primaryAddrWif = 'RRnRESfd5dGdQxDnXvdQVPY1SyqXPgUkBD'
+    const signingId = 'RXT9zkUMrfT2SSzqJG1eniftHNrEYCMFfa'
+    // const primaryAddrWif = 'RXT9zkUMrfT2SSzqJG1eniftHNrEYCMFfa'
+    const primaryAddrWif =
+      'UuwL3tkqGwugREyPC86Bzng9k25Ld87bsM6FFza2Q3SEofXpshTK'
+    // const primaryAddrWif = 'i8koJHX4v2vgwMr9VwEE1KdXgzNztKW3yt'
 
     console.log('creating login consent request')
     try {
       this.lastLoginRequest = await this.idInterface.createLoginConsentRequest(
         signingId,
         challenge,
-        // primaryAddrWif,
+        primaryAddrWif,
       )
       console.log(this.lastLoginRequest)
       return [
@@ -84,16 +92,19 @@ export class VerusAgent {
       ] as const
     } catch (err) {
       console.log('Something went wrong creating the login consent request')
+      // console.log(await this.verifyLoginConsent())
       console.log(err)
     } finally {
       Error.stackTraceLimit = oldStackTraceLimit
     }
+    this.verifyLoginConsent()
     console.log('Done')
 
     return [this.lastLoginRequest, null] as const
   }
 
   async verifyLoginConsent() {
+    console.log('in verify login consent')
     if (!this.lastLoginRequest) return null
 
     try {

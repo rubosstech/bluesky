@@ -12,9 +12,10 @@ import {SessionAccount, useSession} from '#/state/session'
 import {useLoggedOutView} from '#/state/shell/logged-out'
 import {LoggedOutLayout} from '#/view/com/util/layouts/LoggedOutLayout'
 import {ForgotPasswordForm} from '#/screens/Login/ForgotPasswordForm'
-import {LoginForm} from '#/screens/Login/LoginForm'
 import {PasswordUpdatedForm} from '#/screens/Login/PasswordUpdatedForm'
 import {SetNewPasswordForm} from '#/screens/Login/SetNewPasswordForm'
+// import {LoginForm} from '#/screens/Login/LoginForm'
+import {VerusLoginForm} from '#/screens/Login/VerusLoginForm'
 import {atoms as a} from '#/alf'
 import {ChooseAccountForm} from './ChooseAccountForm'
 import {ScreenTransition} from './ScreenTransition'
@@ -100,7 +101,7 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
       title = _(msg`Sign in`)
       description = _(msg`Enter your username and password`)
       content = (
-        <LoginForm
+        <VerusLoginForm
           error={error}
           serviceUrl={serviceUrl}
           serviceDescription={serviceDescription}

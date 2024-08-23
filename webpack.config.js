@@ -62,6 +62,7 @@ module.exports = async function (env, argv) {
   config.resolve.alias = {
     ...(config.resolve.alias || {}),
     bs58check: require.resolve('bs58check'),
+    'bn.js': require.resolve('bn.js'),
   }
 
   config.resolve.fallback = {
@@ -76,6 +77,7 @@ module.exports = async function (env, argv) {
       Buffer: ['buffer', 'Buffer'],
       process: 'process/browser',
       // crypto: 'crypto-browserify',
+      BN: ['bn.js', 'BN'],
     }),
   )
 

@@ -15,6 +15,7 @@ import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 import {VerusIdInterface} from 'verusid-ts-client'
 
 import {IS_DEV} from '#/env'
+// const USE_LOGIN_FORM_VALUES = false;
 // import { verify } from 'crypto'
 
 const TEST_ID = {
@@ -74,7 +75,8 @@ export class VerusAgent {
     this.idInterface = new VerusIdInterface(chain, baseUrl, {})
   }
 
-  async createLoginConsent(..._params: unknown[]) {
+  async createLoginConsent(iaddress?: string, wif?: string) {
+    console.log(iaddress, wif)
     const oldStackTraceLimit = Error.stackTraceLimit
     Error.stackTraceLimit = 1000
     const randID = Buffer.from(crypto.randomBytes(20))
@@ -102,9 +104,9 @@ export class VerusAgent {
     console.log('creating login consent request')
     try {
       // this.lastLoginRequest = await this.idInterface.createLoginConsentRequest(
-      //   signingId,
+      //   USE_LOGIN_FORM_VALUES && iaddress ? iaddress : signingId,
       //   challenge,
-      //   primaryAddrWif,
+      //   USE_LOGIN_FORM_VALUES && wif ? wif : primaryAddrWif,
       // )
       console.log('test copy 3')
       this.lastLoginRequest = await this.idInterface.createLoginConsentRequest(

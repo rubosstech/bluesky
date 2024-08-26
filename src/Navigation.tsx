@@ -625,11 +625,11 @@ function RoutesContainer({children}: React.PropsWithChildren<{}>) {
     staleTime: STALE.MINUTES.ONE,
     queryKey: ['foo', 'bar'],
     async queryFn() {
-      return verusAgent.getMostRecentPost("MnbvDemo2@")
+      return verusAgent.getPosts('Mbnv@')
     },
     enabled: true,
   })
-  console.log('Fake Query:', response)
+  console.log('Fake Query 2:', response)
   const theme = useColorSchemeStyle(DefaultTheme, DarkTheme)
   const {currentAccount} = useSession()
   const {openModal} = useModalControls()

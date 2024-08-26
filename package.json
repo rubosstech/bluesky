@@ -208,7 +208,7 @@
     "tippy.js": "^6.3.7",
     "tlds": "^1.234.0",
     "verus-typescript-primitives": "https://github.com/VerusCoin/verus-typescript-primitives.git",
-    "verusd-rpc-ts-client": "https://github.com/VerusCoin/verusd-rpc-ts-client.git",
+    "verusd-rpc-ts-client": "../verusd-rpc-ts-client",
     "verusid-ts-client": "https://github.com/VerusCoin/verusid-ts-client.git",
     "zeego": "^1.6.2",
     "zod": "^3.20.2"

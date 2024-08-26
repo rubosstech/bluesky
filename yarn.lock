@@ -23087,6 +23087,15 @@ vary@^1, vary@~1.1.2:
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
+verus-typescript-primitives@../verus-typescript-primitives:
+  version "1.0.0"
+  dependencies:
+    base64url "3.0.1"
+    bech32 "2.0.0"
+    bn.js "5.2.1"
+    bs58check "2.0.0"
+    create-hash "1.2.0"
+
 "verus-typescript-primitives@git+https://github.com/VerusCoin/verus-typescript-primitives.git":
   version "1.0.0"
   resolved "git+https://github.com/VerusCoin/verus-typescript-primitives.git#75d08c9763e9439569b509dbf24c3845a693d92d"
@@ -23106,6 +23115,12 @@ vary@^1, vary@~1.1.2:
     bn.js "5.2.1"
     bs58check "2.0.0"
     create-hash "1.2.0"
+
+verusd-rpc-ts-client@../verusd-rpc-ts-client:
+  version "0.1.0"
+  dependencies:
+    axios "1.7.4"
+    verus-typescript-primitives "../verus-typescript-primitives"
 
 "verusd-rpc-ts-client@https://github.com/VerusCoin/verusd-rpc-ts-client.git":
   version "0.1.0"

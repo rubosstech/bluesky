@@ -1,7 +1,6 @@
 // @ts-ignore Ignore this error since the types aren't defined
 import * as crypto from 'crypto-browserify'
 import {
-  ContentMultiMap,
   IDENTITY_VIEW,
   LOGIN_CONSENT_WEBHOOK_VDXF_KEY,
   LoginConsentChallenge,
@@ -16,7 +15,7 @@ import {IS_DEV} from '#/env'
 
 const DEFAULT_CHAIN = IS_DEV ? 'VRSCTEST' : 'VRSC'
 const DEFAULT_URL = IS_DEV
-  ? 'https://api.verustest.net'
+  ? 'http://test:123@127.0.0.1:18843'
   : 'https://api.verus.services'
 
 export function createPublicAgent() {
@@ -116,6 +115,47 @@ export class VerusAgent {
     return await this.rpcInterface.getIdentity('MnbvDemo2@')
   }
 
+  // getPosts retrieves all the data stored within the contentmultimap of
+  // `identity` with the key of vrsc::identity::post.
+  // The identity needs to end with an @.
+  // For now, this will not make any decrypting calls and will only consider
+  // data that is just a simple hex string.
+  async getPosts(identity: string): Promise<string[]> {
+    const resp = await this.rpcInterface.getIdentityContent(identity)
+    const contentmultimap = resp.result?.identity.contentmultimap
+
+    // Check if there is a contentmultimap
+    if (contentmultimap === undefined) {
+      throw new Error('contentmultimap does not exist for identity ' + identity)
+    }
+
+    // Check if there is a singular value in the map or multiple.
+    if (Array.isArray(contentmultimap)) {
+      return []
+    } else {
+      // This is the i-address of vrsc::identity.post
+      let postKey = 'iPwPUbWTh5hFG4fpnAymPz4t2b74263ukZ'
+      let posts = contentmultimap[postKey]
+      // Check if there are several values for that post.
+      if (Array.isArray(posts)) {
+        // Decode the string from hex to regular text.
+        // Assumes we don't have more values wrapped in values.
+        let content = []
+        for (let post of posts) {
+          content.push(this.parsePostContent(post))
+        }
+        return content
+      } else {
+        return [this.parsePostContent(posts)]
+      }
+    }
+  }
+
+  // parsePostContent takes a ContentMultiMapPrimitive and converts it from hex to binary.
+  parsePostContent(contentMultiMapPrimitive: any): string {
+    return Buffer.from(contentMultiMapPrimitive, 'hex').toString('binary')
+  }
+
   async getMostRecentPost(identity: string) {
     let resp = await this.rpcInterface.getIdentity(identity)
     let contentmultimap = resp.result?.identity.contentmultimap
@@ -124,14 +164,14 @@ export class VerusAgent {
       return contentmultimap
     }
 
-    // This is simple parsing now. It may need a recursive structure for 
+    // This is simple parsing now. It may need a recursive structure for
     // handling the map values in map values.
     // Check if the multimap is an array of values.
     if (Array.isArray(contentmultimap)) {
       return contentmultimap
     } else {
       // This is the i-address of vrsc::identity.post
-      let postKey = "iPwPUbWTh5hFG4fpnAymPz4t2b74263ukZ"
+      let postKey = 'iPwPUbWTh5hFG4fpnAymPz4t2b74263ukZ'
       let postContent = contentmultimap[postKey]
       // Check if there are several values for that post.
       if (Array.isArray(postContent)) {

@@ -48,20 +48,25 @@ export const VerusLoginForm = ({
   const {_} = useLingui()
 
   const onPressNext = async () => {
-    let iaddress = identifierValueRef.current
-    let wif = passwordValueRef.current
+    // let iaddress = identifierValueRef.current
+    // let password = passwordValueRef.current
 
-    setIsProcessing(true) // Set processing state to true while processing
+    setIsProcessing(true)
     try {
-      const response = await verusAgent.createLoginConsent(iaddress, wif) // Await the response
-      const URI = response[2] ?? null // Ensure URI is properly accessed and resolved
-      console.log(URI)
-      setUri(URI) // Store the URI in state for QR code
+      const URI = await verusAgent.getLoginURI().then(res => res)
+
+      if (!URI) {
+        throw new Error('URI not found')
+      }
+
+      console.log('URI:', URI)
+
+      setUri(URI)
     } catch (err) {
       console.error('Error creating login consent:', err)
-      setError('Failed to generate login consent') // Update error state if needed
+      setError('Failed to generate login consent')
     } finally {
-      setIsProcessing(false) // Reset processing state
+      setIsProcessing(false)
     }
   }
 

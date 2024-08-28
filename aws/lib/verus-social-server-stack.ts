@@ -1,8 +1,17 @@
 import {Stack, StackProps} from 'aws-cdk-lib'
-import {LambdaRestApi} from 'aws-cdk-lib/aws-apigateway'
+import {
+  AwsIntegration,
+  Cors,
+  LambdaIntegration,
+  PassthroughBehavior,
+  RestApi,
+} from 'aws-cdk-lib/aws-apigateway'
+import {PolicyStatement, Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam'
 import {Construct} from 'constructs'
 
 import {NodeLambda} from './constructs/node_lambda'
+import {S3StaticSite} from './constructs/s3_static_site'
+import path = require('path')
 
 export class VerusSocialServerStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -14,10 +23,96 @@ export class VerusSocialServerStack extends Stack {
       handler: 'src/lambda_server.handler',
     })
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const api = new LambdaRestApi(this, 'VerusSocialApi', {
-      handler: serverFunction.lambda,
-      proxy: true,
+    const assetSite = new S3StaticSite(this, 'AssetSite')
+
+    const api = new RestApi(this, 'PrimaryApi')
+
+    serverFunction.lambda.addPermission('PermitApiGwInvoke', {
+      principal: new ServicePrincipal('apigateway.amazonaws.com'),
+      sourceArn: api.arnForExecuteApi('*'),
+    })
+
+    const apiGatewayRole = new Role(this, 'APIGatewayRole', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    })
+
+    apiGatewayRole.addToPolicy(
+      new PolicyStatement({
+        actions: ['s3:GetObject'],
+        resources: [
+          assetSite.bucket.bucketArn,
+          path.join(assetSite.bucket.bucketArn, '*'),
+        ],
+      }),
+    )
+
+    // Static part of the site
+    api.root.addMethod(
+      'GET',
+      new AwsIntegration({
+        service: 's3',
+        integrationHttpMethod: 'GET',
+        path: path.join(assetSite.bucket.bucketName, 'index.html'),
+        options: {
+          credentialsRole: apiGatewayRole,
+          passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+          integrationResponses: [
+            {
+              statusCode: '200',
+              responseParameters: {
+                'method.response.header.Content-Type':
+                  'integration.response.header.Content-Type',
+              },
+            },
+          ],
+        },
+      }),
+    )
+    api.root
+      .addProxy({
+        defaultCorsPreflightOptions: {
+          allowOrigins: Cors.ALL_ORIGINS,
+          allowMethods: ['GET'],
+        },
+        defaultIntegration: new AwsIntegration({
+          service: 's3',
+          integrationHttpMethod: 'GET',
+          path: path.join(assetSite.bucket.bucketName, '{proxy+}'),
+          options: {
+            credentialsRole: apiGatewayRole,
+            passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+            integrationResponses: [
+              {
+                statusCode: '200',
+                responseParameters: {
+                  'method.response.header.Content-Type':
+                    'integration.response.header.Content-Type',
+                },
+              },
+            ],
+          },
+        }),
+        anyMethod: false,
+      })
+      .addMethod('GET')
+    // Backend part of the site
+    api.root.addResource('hello_world').addProxy({
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+      },
+      defaultIntegration: new LambdaIntegration(serverFunction.lambda, {
+        proxy: true,
+      }),
+    })
+    api.root.addResource('api').addProxy({
+      defaultCorsPreflightOptions: {
+        allowOrigins: Cors.ALL_ORIGINS,
+        allowMethods: Cors.ALL_METHODS,
+      },
+      defaultIntegration: new LambdaIntegration(serverFunction.lambda, {
+        proxy: true,
+      }),
     })
   }
 }

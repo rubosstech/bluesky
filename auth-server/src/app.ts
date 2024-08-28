@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express from 'express'
 
 import {helloWorldRouter} from './api/hello_world'
@@ -7,8 +8,12 @@ const app = express()
 
 // TODO middlewares
 
+// allow cors
+app.use(cors())
+
 app.use('/hello_world', helloWorldRouter)
 app.use('/api/v1', v1Router)
+
 app.all('*', (req, res) => {
   res.status(404)
   res.send('Hello From Verus Social!!!')

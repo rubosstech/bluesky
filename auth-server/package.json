@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.145",
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.5.1",
     "tsx": "^4.19.0",
@@ -18,7 +19,11 @@
   "dependencies": {
     "@codegenie/serverless-express": "^4.15.0",
     "aws-sdk": "^2.1684.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "verus-typescript-primitives": "https://github.com/VerusCoin/verus-typescript-primitives.git",
+    "verusid-ts-client": "https://github.com/VerusCoin/verusid-ts-client.git",
     "zod": "^3.23.8"
   }
 }

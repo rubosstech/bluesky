@@ -6,6 +6,7 @@
   },
   "scripts": {
     "dev": "tsx --watch src/local_server.ts",
+    "start": "tsx src/local_server.ts",
     "build": "tsc"
   },
   "devDependencies": {

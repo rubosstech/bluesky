@@ -7,6 +7,8 @@ import {
   Alias,
   AssetCode,
   Function,
+  FunctionUrl,
+  FunctionUrlAuthType,
   IFunction,
   Runtime,
 } from 'aws-cdk-lib/aws-lambda'
@@ -26,6 +28,7 @@ export interface NodeLambdaProps {
 export class NodeLambda extends Construct {
   readonly lambda: IFunction
   readonly deploymentGroup: LambdaDeploymentGroup
+  readonly functionUrl: FunctionUrl
 
   constructor(scope: Construct, id: string, props: NodeLambdaProps) {
     super(scope, id)
@@ -69,6 +72,10 @@ export class NodeLambda extends Construct {
       // TODO - Switch to a linear or canary configuration
       deploymentConfig: LambdaDeploymentConfig.ALL_AT_ONCE,
       // TODO - alarms
+    })
+
+    this.functionUrl = lambda.addFunctionUrl({
+      authType: FunctionUrlAuthType.NONE,
     })
   }
 }

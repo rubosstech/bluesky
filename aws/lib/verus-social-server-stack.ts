@@ -1,4 +1,4 @@
-import {Stack, StackProps} from 'aws-cdk-lib'
+import {Duration, Stack, StackProps} from 'aws-cdk-lib'
 import {
   AwsIntegration,
   Cors,
@@ -12,10 +12,41 @@ import {Construct} from 'constructs'
 import {NodeLambda} from './constructs/node_lambda'
 import {S3StaticSite} from './constructs/s3_static_site'
 import path = require('path')
+import {
+  AllowedMethods,
+  CachedMethods,
+  CachePolicy,
+  Distribution,
+  OriginAccessIdentity,
+  OriginRequestPolicy,
+  ViewerProtocolPolicy,
+} from 'aws-cdk-lib/aws-cloudfront'
+import {FunctionUrlOrigin, HttpOrigin} from 'aws-cdk-lib/aws-cloudfront-origins'
+import {Cluster, ContainerImage} from 'aws-cdk-lib/aws-ecs'
+import {ApplicationLoadBalancedFargateService} from 'aws-cdk-lib/aws-ecs-patterns'
 
 export class VerusSocialServerStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props)
+
+    const cluster = new Cluster(this, 'Cluster')
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const service = new ApplicationLoadBalancedFargateService(
+      this,
+      'BackendService',
+      {
+        cluster,
+        memoryLimitMiB: 1024,
+        desiredCount: 1,
+        cpu: 512,
+        taskImageOptions: {
+          image: ContainerImage.fromAsset('../', {
+            file: 'Dockerfile.server',
+          }),
+        },
+      },
+    )
 
     const serverFunction = new NodeLambda(this, 'ServerLambda', {
       codeDir: '../auth-server',
@@ -45,6 +76,65 @@ export class VerusSocialServerStack extends Stack {
         ],
       }),
     )
+
+    const distributionAccessIdentity = new OriginAccessIdentity(
+      this,
+      'DistributionAccessIdentity',
+    )
+    assetSite.bucket.grantRead(distributionAccessIdentity)
+
+    // const bucketOrigin = new S3Origin(assetSite.bucket, {
+    //   originAccessIdentity: distributionAccessIdentity,
+    //   connectionAttempts: 3,
+    //   connectionTimeout: Duration.seconds(1),
+    // })
+    const bucketOrigin = new HttpOrigin(
+      assetSite.bucket.bucketWebsiteDomainName,
+    )
+
+    const lambdaOrigin = new FunctionUrlOrigin(serverFunction.functionUrl, {
+      connectionAttempts: 3,
+      connectionTimeout: Duration.seconds(1),
+      keepaliveTimeout: Duration.seconds(30),
+      readTimeout: Duration.seconds(10),
+    })
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const distribution = new Distribution(this, 'Distribution', {
+      defaultRootObject: 'index.html',
+      enableIpv6: true,
+      defaultBehavior: {
+        origin: bucketOrigin,
+        allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+        cachedMethods: CachedMethods.CACHE_GET_HEAD_OPTIONS,
+        compress: true,
+        cachePolicy: CachePolicy.CACHING_OPTIMIZED,
+        originRequestPolicy: OriginRequestPolicy.ALL_VIEWER_AND_CLOUDFRONT_2022,
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+      },
+      additionalBehaviors: {
+        '/hello_world': {
+          origin: lambdaOrigin,
+          allowedMethods: AllowedMethods.ALLOW_GET_HEAD_OPTIONS,
+          cachedMethods: CachedMethods.CACHE_GET_HEAD_OPTIONS,
+          compress: true,
+          cachePolicy: CachePolicy.CACHING_OPTIMIZED,
+          originRequestPolicy:
+            OriginRequestPolicy.ALL_VIEWER_AND_CLOUDFRONT_2022,
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+        '/api/*': {
+          origin: lambdaOrigin,
+          allowedMethods: AllowedMethods.ALLOW_ALL,
+          cachedMethods: CachedMethods.CACHE_GET_HEAD_OPTIONS,
+          compress: true,
+          cachePolicy: CachePolicy.CACHING_DISABLED,
+          originRequestPolicy:
+            OriginRequestPolicy.ALL_VIEWER_AND_CLOUDFRONT_2022,
+          viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+      },
+    })
 
     // Static part of the site
     api.root.addMethod(

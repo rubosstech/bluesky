@@ -1,5 +1,5 @@
 import {Runtime} from 'aws-cdk-lib/aws-lambda'
-import {Bucket, IBucket} from 'aws-cdk-lib/aws-s3'
+import {BlockPublicAccess, Bucket, IBucket} from 'aws-cdk-lib/aws-s3'
 import {BucketDeployment, Source} from 'aws-cdk-lib/aws-s3-deployment'
 import {Construct} from 'constructs'
 
@@ -14,7 +14,12 @@ export class S3StaticSite extends Construct {
   constructor(scope: Construct, id: string, props: S3StaticSiteProps = {}) {
     super(scope, id)
 
-    this.bucket = new Bucket(this, 'Files')
+    this.bucket = new Bucket(this, 'Files', {
+      publicReadAccess: true,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ACLS,
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: 'index.html',
+    })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const deployment = new BucketDeployment(this, 'DeployFiles', {

@@ -1,12 +1,11 @@
 // @ts-ignore Ignore this error since the types aren't defined
 // import * as crypto from 'crypto-browserify'
+import base64url from 'base64url'
+import {LoginConsentResponse} from 'verus-typescript-primitives'
 import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 import {VerusIdInterface} from 'verusid-ts-client'
 
 import {IS_DEV} from '#/env'
-// const USE_LOGIN_FORM_VALUES = false
-// import { verify } from 'crypto'
-
 const ID = {
   identity: {
     version: 3,
@@ -69,7 +68,7 @@ export class VerusAgent {
   async getLoginURI() {
     try {
       const response = await fetch(
-        'http://localhost:3000/api/v1/login/get-login-request',
+        `${process.env.BASE_URL}/api/v1/login/get-login-request`,
       )
 
       if (!response.ok) {
@@ -91,6 +90,38 @@ export class VerusAgent {
       throw new Error('Unexpected response format')
     } catch (err) {
       console.error('Error creating login consent:', err)
+      return null
+    }
+  }
+
+  async getIdentityFromResponse(code: any) {
+    let response = new LoginConsentResponse()
+    response.fromBuffer(base64url.toBuffer(code))
+
+    console.log('response:', response)
+    const isValid = await this.idInterface.verifyLoginConsentResponse(response)
+    console.log('isValid:', isValid)
+
+    let id
+    let idat = 'sad'
+
+    if (isValid) {
+      id = await this.rpcInterface.getIdentity(response.signing_id)
+      idat = id.result?.identity.name + '@'
+      // session = response.decision.request.challenge.session_id
+    }
+
+    return idat
+  }
+
+  async decode(code: string) {
+    try {
+      let res = new LoginConsentResponse()
+      res.fromBuffer(base64url.toBuffer(code))
+
+      return res
+    } catch (error) {
+      console.error('Error decoding code:', error)
       return null
     }
   }

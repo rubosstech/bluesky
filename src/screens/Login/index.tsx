@@ -99,7 +99,9 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
   switch (currentForm) {
     case Forms.Login:
       title = _(msg`Sign in`)
-      description = _(msg`Enter your username and password`)
+      description = _(
+        msg`Scan the QR code or click the button below to log in with the Verus Mobile app`,
+      )
       content = (
         <VerusLoginForm
           error={error}
@@ -107,7 +109,7 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
           serviceDescription={serviceDescription}
           initialHandle={initialHandle}
           setError={setError}
-          setServiceUrl={setServiceUrl}
+          // setServiceUrl={setServiceUrl}
           onPressBack={() =>
             accounts.length ? gotoForm(Forms.ChooseAccount) : onPressBack()
           }

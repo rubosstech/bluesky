@@ -69,6 +69,7 @@ import {
 import {useAgent} from './state/verus_session'
 import {AccessibilitySettingsScreen} from './view/screens/AccessibilitySettings'
 import {CommunityGuidelinesScreen} from './view/screens/CommunityGuidelines'
+import {ConfirmLogin} from './view/screens/ConfirmLogin'
 import {CopyrightPolicyScreen} from './view/screens/CopyrightPolicy'
 import {DebugModScreen} from './view/screens/DebugMod'
 import {FeedsScreen} from './view/screens/Feeds'
@@ -351,6 +352,11 @@ function commonScreens(Stack: typeof HomeTab, unreadCountLabel?: string) {
         name="StarterPackEdit"
         getComponent={() => Wizard}
         options={{title: title(msg`Edit your starter pack`), requireAuth: true}}
+      />
+      <Stack.Screen
+        name="ConfirmLogin"
+        getComponent={() => ConfirmLogin}
+        options={{title: title(msg`ConfirmLogin`)}}
       />
     </>
   )

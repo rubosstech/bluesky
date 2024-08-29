@@ -14,10 +14,9 @@ RUN yarn build-web
 
 FROM base AS server
 
-RUN mkdir -p /app
-WORKDIR /app
+COPY ./auth-server /app
 
-COPY ./auth-server/* ./
+WORKDIR /app
 
 RUN yarn install
 

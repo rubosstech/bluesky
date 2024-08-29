@@ -67,6 +67,16 @@ export class VerusSocialServerStack extends Stack {
           ],
         },
       }),
+      {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true,
+            },
+          },
+        ],
+      },
     )
     api.root
       .addProxy({
@@ -93,6 +103,16 @@ export class VerusSocialServerStack extends Stack {
           },
         }),
         anyMethod: false,
+        defaultMethodOptions: {
+          methodResponses: [
+            {
+              statusCode: '200',
+              responseParameters: {
+                'method.response.header.Content-Type': true,
+              },
+            },
+          ],
+        },
       })
       .addMethod('GET')
     // Backend part of the site
@@ -103,7 +123,26 @@ export class VerusSocialServerStack extends Stack {
       },
       defaultIntegration: new LambdaIntegration(serverFunction.lambda, {
         proxy: true,
+        integrationResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type':
+                'integration.response.header.Content-Type',
+            },
+          },
+        ],
       }),
+      defaultMethodOptions: {
+        methodResponses: [
+          {
+            statusCode: '200',
+            responseParameters: {
+              'method.response.header.Content-Type': true,
+            },
+          },
+        ],
+      },
     })
     api.root.addResource('api').addProxy({
       defaultCorsPreflightOptions: {
@@ -112,7 +151,19 @@ export class VerusSocialServerStack extends Stack {
       },
       defaultIntegration: new LambdaIntegration(serverFunction.lambda, {
         proxy: true,
+        integrationResponses: [
+          {
+            statusCode: '200',
+          },
+        ],
       }),
+      defaultMethodOptions: {
+        methodResponses: [
+          {
+            statusCode: '200',
+          },
+        ],
+      },
     })
   }
 }

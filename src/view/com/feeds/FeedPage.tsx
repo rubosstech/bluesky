@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, {useState} from 'react'
 import {StyleSheet, TouchableOpacity, View} from 'react-native'
 import {AppBskyActorDefs} from '@atproto/api'
 import {msg, Trans} from '@lingui/macro'
@@ -6,7 +6,6 @@ import {useLingui} from '@lingui/react'
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 
-import {EditBig_Stroke2_Corner0_Rounded as EditBig} from '#/components/icons/EditBig'
 import {getRootNavigation, getTabState, TabState} from '#/lib/routes/helpers'
 import {logEvent} from '#/lib/statsig/statsig'
 import {isNative} from '#/platform/detection'
@@ -26,6 +25,7 @@ import {AllNavigatorParams} from 'lib/routes/types'
 import {colors, s} from 'lib/styles'
 import {Text} from 'view/com/util/text/Text'
 import {useHeaderOffset} from '#/components/hooks/useHeaderOffset'
+import {EditBig_Stroke2_Corner0_Rounded as EditBig} from '#/components/icons/EditBig'
 import {Feed} from '../posts/Feed'
 import {FAB} from '../util/fab/FAB'
 import {ListMethods} from '../util/List'
@@ -209,38 +209,53 @@ export function FeedPage({
     },
   })
 
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState('')
 
-  const handleChange = (event: { target: { value: React.SetStateAction<string> } }) => {
-    setMessage(event.target.value);
-  };
+  const handleChange = (event: {
+    target: {value: React.SetStateAction<string>}
+  }) => {
+    setMessage(event.target.value)
+  }
 
   function postClick() {
-    agent.sendPost("MnbvDemo2",message)
+    agent.sendPost('MnbvDemo2', message)
   }
 
   return (
     <View testID={testID} style={s.h100pct}>
       <MainScrollProvider>
-      <input onChange={handleChange} value={message}></input>
-      <View style={styles.newPostBtnContainer}>
-      <TouchableOpacity
-        disabled={false}
-        style={styles.newPostBtn}
-        onPress={postClick}
-        accessibilityRole="button"
-        accessibilityLabel={_(msg`Send post`)}
-        accessibilityHint="">
-        <View style={styles.newPostBtnIconWrapper}>
-          <EditBig width={19} style={styles.newPostBtnLabel} />
-        </View>
-        <Text type="button" style={styles.newPostBtnLabel}>
-          <Trans context="action">Send Post</Trans>
-        </Text>
-      </TouchableOpacity>
-    </View>
-        <FeedFeedbackProvider value={feedFeedback}>
         <View
+          style={{
+            maxWidth: 600,
+            marginHorizontal: 'auto',
+            width: '100%',
+            padding: 8,
+          }}>
+          <Text style={{fontWeight: 'bold'}}>Share your Thoughts</Text>
+          <input
+            style={{borderColor: 'lightgray', borderRadius: 4, borderWidth: 1}}
+            onChange={handleChange}
+            value={message}
+          />
+          <View style={styles.newPostBtnContainer}>
+            <TouchableOpacity
+              disabled={false}
+              style={styles.newPostBtn}
+              onPress={postClick}
+              accessibilityRole="button"
+              accessibilityLabel={_(msg`Send post`)}
+              accessibilityHint="">
+              <View style={styles.newPostBtnIconWrapper}>
+                <EditBig width={19} style={styles.newPostBtnLabel} />
+              </View>
+              <Text type="button" style={styles.newPostBtnLabel}>
+                <Trans context="action">Send Post</Trans>
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <FeedFeedbackProvider value={feedFeedback}>
+          <View
             style={{
               maxWidth: 600,
               width: '100%',

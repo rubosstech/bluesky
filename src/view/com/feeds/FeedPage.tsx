@@ -18,7 +18,7 @@ import {truncateAndInvalidate} from '#/state/queries/util'
 import {useSession} from '#/state/session'
 import {useSetMinimalShellMode} from '#/state/shell'
 import {useComposerControls} from '#/state/shell/composer'
-import {useAgent} from '#/state/verus_session'
+import {useAgent, useIdentity} from '#/state/verus_session'
 import {useAnalytics} from 'lib/analytics/analytics'
 import {ComposeIcon2} from 'lib/icons'
 import {AllNavigatorParams} from 'lib/routes/types'
@@ -114,6 +114,8 @@ export function FeedPage({
   }, [scrollToTop, feed, queryClient, setHasNew])
 
   const agent = useAgent()
+  const verusId = useIdentity()
+
   const markVerusPost = useQuery({
     staleTime: STALE.SECONDS.FIFTEEN,
     queryKey: ['singlePost', '1'],
@@ -217,10 +219,6 @@ export function FeedPage({
     setMessage(event.target.value)
   }
 
-  function postClick() {
-    agent.sendPost('MnbvDemo2', message)
-  }
-
   return (
     <View testID={testID} style={s.h100pct}>
       <MainScrollProvider>
@@ -241,7 +239,10 @@ export function FeedPage({
             <TouchableOpacity
               disabled={false}
               style={styles.newPostBtn}
-              onPress={postClick}
+              onPress={async () => {
+                await agent.sendPost(verusId ?? 'MbnvDemo2', message)
+                setMessage('')
+              }}
               accessibilityRole="button"
               accessibilityLabel={_(msg`Send post`)}
               accessibilityHint="">

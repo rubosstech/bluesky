@@ -6,6 +6,8 @@ import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 import {VerusIdInterface} from 'verusid-ts-client'
 
 import {IS_DEV} from '#/env'
+
+// TODO - All of these values should be in env
 const ID = {
   identity: {
     version: 3,
@@ -32,6 +34,12 @@ const ID = {
 }
 
 const VERUSTEST_I_ADDR = 'iJhCezBExJHvtyH3fGhNnt2NhU4Ztkf2yq'
+
+// !GH - Move this into env but for the time being this will do
+// Note if the load balancer gets recreated this will change
+const BASE_URL =
+  'http://veruss-backe-iwc3sb0kxz6x-1672333311.us-west-2.elb.amazonaws.com/'
+// const BASE_URL = process.env.BASE_URL as string
 
 const DEFAULT_CHAIN = IS_DEV ? 'VRSCTEST' : 'VRSC'
 const DEFAULT_URL = IS_DEV
@@ -67,9 +75,7 @@ export class VerusAgent {
 
   async getLoginURI() {
     try {
-      const response = await fetch(
-        `${process.env.BASE_URL}/api/v1/login/get-login-request`,
-      )
+      const response = await fetch(`${BASE_URL}api/v1/login/get-login-request`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)

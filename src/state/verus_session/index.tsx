@@ -1,8 +1,8 @@
-import React from 'react'
+import React, {useSyncExternalStore} from 'react'
 
 import {isWeb} from '#/platform/detection'
 import {IS_DEV} from '#/env'
-import {VerusAgent} from './agent'
+import {createPublicAgent, VerusAgent} from './agent'
 import {addSessionDebugLog} from './logging'
 import {getInitialState, reducer} from './reducer'
 import {AuthApiContext} from './types'
@@ -76,6 +76,9 @@ export function Provider({children}: React.PropsWithChildren<{}>) {
       if (signal.aborted) {
         return
       }
+
+      const newAgent = createPublicAgent()
+      newAgent.identity = state.currentAgentState.agent.identity
 
       dispatch({
         type: 'switched-to-account',
@@ -180,4 +183,21 @@ export function useAgent(): VerusAgent {
 
 export function useAuthApi() {
   return React.useContext(ApiContext)
+}
+
+// This is not great code however since agent is not reactive
+// we need to useSyncExternalStore to subscribe to it. It's
+// good enough for now.
+export function useIdentity() {
+  const agent = useAgent()
+  const identity = useSyncExternalStore(
+    cb => {
+      agent.subscribe(cb)
+      return () => agent.unsubscribe(cb)
+    },
+    () => agent.identity,
+    () => agent.identity,
+  )
+
+  return identity
 }

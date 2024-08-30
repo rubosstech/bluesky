@@ -24,6 +24,7 @@ import {useSession} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
 import {useShellLayout} from '#/state/shell/shell-layout'
 import {useCloseAllActiveElements} from '#/state/util'
+import {useIdentity} from '#/state/verus_session'
 import {Button} from '#/view/com/util/forms/Button'
 import {Text} from '#/view/com/util/text/Text'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
@@ -122,6 +123,8 @@ export function BottomBar({navigation}: BottomTabBarProps) {
     playHaptic()
     accountSwitchControl.open()
   }, [accountSwitchControl, playHaptic])
+
+  const verusId = useIdentity()
 
   return (
     <>
@@ -298,27 +301,33 @@ export function BottomBar({navigation}: BottomTabBarProps) {
                 </View>
               </View>
 
-              <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
-                <Button
-                  onPress={showCreateAccount}
-                  accessibilityHint={_(msg`Sign up`)}
-                  accessibilityLabel={_(msg`Sign up`)}>
-                  <Text type="md" style={[{color: 'white'}, s.bold]}>
-                    <Trans>Sign up</Trans>
-                  </Text>
-                </Button>
+              {verusId ? (
+                <View>
+                  <Text>Welcome {verusId}</Text>
+                </View>
+              ) : (
+                <View
+                  style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+                  <Button
+                    onPress={showCreateAccount}
+                    accessibilityHint={_(msg`Sign up`)}
+                    accessibilityLabel={_(msg`Sign up`)}>
+                    <Text type="md" style={[{color: 'white'}, s.bold]}>
+                      <Trans>Sign up</Trans>
+                    </Text>
+                  </Button>
 
-                <Button
-                  type="default"
-                  onPress={showSignIn}
-                  accessibilityHint={_(msg`Sign in`)}
-                  accessibilityLabel={_(msg`Sign in`)}>
-                  <Text type="md" style={[pal.text, s.bold]}>
-                    <Trans>Sign in</Trans>
-                  </Text>
-                </Button>
-              </View>
+                  <Button
+                    type="default"
+                    onPress={showSignIn}
+                    accessibilityHint={_(msg`Sign in`)}
+                    accessibilityLabel={_(msg`Sign in`)}>
+                    <Text type="md" style={[pal.text, s.bold]}>
+                      <Trans>Sign in</Trans>
+                    </Text>
+                  </Button>
+                </View>
+              )}
             </View>
           </>
         )}

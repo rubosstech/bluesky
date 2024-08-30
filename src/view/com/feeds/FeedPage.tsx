@@ -1,11 +1,12 @@
 import React from 'react'
-import {View} from 'react-native'
+import {StyleSheet, TouchableOpacity, View} from 'react-native'
 import {AppBskyActorDefs} from '@atproto/api'
-import {msg} from '@lingui/macro'
+import {msg, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {NavigationProp, useNavigation} from '@react-navigation/native'
 import {useQuery, useQueryClient} from '@tanstack/react-query'
 
+import {EditBig_Stroke2_Corner0_Rounded as EditBig} from '#/components/icons/EditBig'
 import {getRootNavigation, getTabState, TabState} from '#/lib/routes/helpers'
 import {logEvent} from '#/lib/statsig/statsig'
 import {isNative} from '#/platform/detection'
@@ -22,7 +23,7 @@ import {useAgent} from '#/state/verus_session'
 import {useAnalytics} from 'lib/analytics/analytics'
 import {ComposeIcon2} from 'lib/icons'
 import {AllNavigatorParams} from 'lib/routes/types'
-import {s} from 'lib/styles'
+import {colors, s} from 'lib/styles'
 import {Text} from 'view/com/util/text/Text'
 import {useHeaderOffset} from '#/components/hooks/useHeaderOffset'
 import {Feed} from '../posts/Feed'
@@ -175,10 +176,30 @@ export function FeedPage({
       }
     },
   })
+  
+  function postClick() {
+    agent.sendPost()
+  }
 
   return (
     <View testID={testID} style={s.h100pct}>
       <MainScrollProvider>
+      <View style={styles.newPostBtnContainer}>
+      <TouchableOpacity
+        disabled={false}
+        style={styles.newPostBtn}
+        onPress={postClick}
+        accessibilityRole="button"
+        accessibilityLabel={_(msg`New post`)}
+        accessibilityHint="">
+        <View style={styles.newPostBtnIconWrapper}>
+          <EditBig width={19} style={styles.newPostBtnLabel} />
+        </View>
+        <Text type="button" style={styles.newPostBtnLabel}>
+          <Trans context="action">New Post</Trans>
+        </Text>
+      </TouchableOpacity>
+    </View>
         <FeedFeedbackProvider value={feedFeedback}>
           <View
             style={{
@@ -264,3 +285,106 @@ export function FeedPage({
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  leftNav: {
+    // @ts-ignore web only
+    position: 'fixed',
+    top: 10,
+    // @ts-ignore web only
+    left: 'calc(50vw - 300px - 220px - 20px)',
+    width: 220,
+    // @ts-ignore web only
+    maxHeight: 'calc(100vh - 10px)',
+    overflowY: 'auto',
+  },
+  leftNavTablet: {
+    top: 0,
+    left: 0,
+    right: 'auto',
+    borderRightWidth: 1,
+    height: '100%',
+    width: 76,
+    alignItems: 'center',
+  },
+
+  profileCard: {
+    marginVertical: 10,
+    width: 90,
+    paddingLeft: 12,
+  },
+  profileCardTablet: {
+    width: 70,
+  },
+
+  backBtn: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 30,
+    height: 30,
+  },
+
+  navItemWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    padding: 12,
+    borderRadius: 8,
+    gap: 10,
+  },
+  navItemIconWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 28,
+    height: 24,
+    marginTop: 2,
+    zIndex: 1,
+  },
+  navItemIconWrapperTablet: {
+    width: 40,
+    height: 40,
+  },
+  navItemCount: {
+    position: 'absolute',
+    top: 0,
+    left: 15,
+    backgroundColor: colors.blue3,
+    color: colors.white,
+    fontSize: 12,
+    fontWeight: 'bold',
+    paddingHorizontal: 4,
+    borderRadius: 6,
+  },
+  navItemCountTablet: {
+    left: 18,
+    fontSize: 14,
+  },
+
+  newPostBtnContainer: {
+    flexDirection: 'row',
+  },
+  newPostBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 24,
+    paddingTop: 10,
+    paddingBottom: 12, // visually aligns the text vertically inside the button
+    paddingLeft: 16,
+    paddingRight: 18, // looks nicer like this
+    backgroundColor: colors.blue3,
+    marginLeft: 12,
+    marginTop: 20,
+    marginBottom: 10,
+    gap: 8,
+  },
+  newPostBtnIconWrapper: {
+    marginTop: 2, // aligns the icon visually with the text
+  },
+  newPostBtnLabel: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+})

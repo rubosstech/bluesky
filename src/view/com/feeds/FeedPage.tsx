@@ -4,23 +4,26 @@ import {AppBskyActorDefs} from '@atproto/api'
 import {msg} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {NavigationProp, useNavigation} from '@react-navigation/native'
-import {useQueryClient} from '@tanstack/react-query'
+import {useQuery, useQueryClient} from '@tanstack/react-query'
 
 import {getRootNavigation, getTabState, TabState} from '#/lib/routes/helpers'
 import {logEvent} from '#/lib/statsig/statsig'
 import {isNative} from '#/platform/detection'
 import {listenSoftReset} from '#/state/events'
 import {FeedFeedbackProvider, useFeedFeedback} from '#/state/feed-feedback'
+import {STALE} from '#/state/queries'
 import {RQKEY as FEED_RQKEY} from '#/state/queries/post-feed'
 import {FeedDescriptor, FeedParams} from '#/state/queries/post-feed'
 import {truncateAndInvalidate} from '#/state/queries/util'
 import {useSession} from '#/state/session'
 import {useSetMinimalShellMode} from '#/state/shell'
 import {useComposerControls} from '#/state/shell/composer'
+import {useAgent} from '#/state/verus_session'
 import {useAnalytics} from 'lib/analytics/analytics'
 import {ComposeIcon2} from 'lib/icons'
 import {AllNavigatorParams} from 'lib/routes/types'
 import {s} from 'lib/styles'
+import {Text} from 'view/com/util/text/Text'
 import {useHeaderOffset} from '#/components/hooks/useHeaderOffset'
 import {Feed} from '../posts/Feed'
 import {FAB} from '../util/fab/FAB'
@@ -109,10 +112,120 @@ export function FeedPage({
     })
   }, [scrollToTop, feed, queryClient, setHasNew])
 
+  const agent = useAgent()
+  const markVerusPost = useQuery({
+    staleTime: STALE.SECONDS.FIFTEEN,
+    queryKey: ['singlePost', '1'],
+    async queryFn() {
+      const identity = 'Mbnv@'
+      let resp = await agent.rpcInterface.getIdentity(identity)
+      let contentmultimap = resp.result?.identity.contentmultimap
+
+      if (contentmultimap === undefined) {
+        return contentmultimap
+      }
+
+      // This is simple parsing now. It may need a recursive structure for
+      // handling the map values in map values.
+      // Check if the multimap is an array of values.
+      if (Array.isArray(contentmultimap)) {
+        return contentmultimap
+      } else {
+        // This is the i-address of vrsc::identity.post
+        let postKey = 'iPwPUbWTh5hFG4fpnAymPz4t2b74263ukZ'
+        let postContent = contentmultimap[postKey]
+        // Check if there are several values for that post.
+        if (Array.isArray(postContent)) {
+          // Decode the string from hex to regular text.
+          return Buffer.from(postContent[0], 'hex').toString('binary')
+        } else {
+          return postContent
+        }
+      }
+    },
+  })
+  const mark2VerusPost = useQuery({
+    staleTime: STALE.SECONDS.FIFTEEN,
+    queryKey: ['singlePost', '2'],
+    async queryFn() {
+      const identity = 'MJS@'
+      let resp = await agent.rpcInterface.getIdentity(identity)
+      let contentmultimap = resp.result?.identity.contentmultimap
+
+      if (contentmultimap === undefined) {
+        return contentmultimap
+      }
+
+      // This is simple parsing now. It may need a recursive structure for
+      // handling the map values in map values.
+      // Check if the multimap is an array of values.
+      if (Array.isArray(contentmultimap)) {
+        return contentmultimap
+      } else {
+        // This is the i-address of vrsc::identity.post
+        let postKey = 'iPwPUbWTh5hFG4fpnAymPz4t2b74263ukZ'
+        let postContent = contentmultimap[postKey]
+        // Check if there are several values for that post.
+        if (Array.isArray(postContent)) {
+          // Decode the string from hex to regular text.
+          return Buffer.from(postContent[0], 'hex').toString('binary')
+        } else {
+          return postContent
+        }
+      }
+    },
+  })
+
   return (
     <View testID={testID} style={s.h100pct}>
       <MainScrollProvider>
         <FeedFeedbackProvider value={feedFeedback}>
+          <View
+            style={{
+              maxWidth: 600,
+              width: '100%',
+              padding: 2,
+              marginHorizontal: 'auto',
+            }}>
+            <Text>
+              <Text style={{fontSize: 16, fontWeight: 700, marginRight: 4}}>
+                Mark Verus
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  letterSpacing: 0.25,
+                  color: 'rgb(66, 87, 108)',
+                }}>
+                Mbnv@
+              </Text>
+            </Text>
+            <Text>{JSON.stringify(markVerusPost.data)}</Text>
+          </View>
+          <View
+            style={{
+              maxWidth: 600,
+              width: '100%',
+              padding: 2,
+              marginHorizontal: 'auto',
+            }}>
+            <Text>
+              <Text style={{fontSize: 16, fontWeight: 700, marginRight: 4}}>
+                Mark 2 Verus
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  letterSpacing: 0.25,
+                  color: 'rgb(66, 87, 108)',
+                }}>
+                MJS@
+              </Text>
+            </Text>
+            <Text>{JSON.stringify(mark2VerusPost.data)}</Text>
+          </View>
           <Feed
             testID={testID ? `${testID}-feed` : undefined}
             enabled={isPageFocused}

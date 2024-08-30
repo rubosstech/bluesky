@@ -1,6 +1,5 @@
 // @ts-ignore: No type definitions for crypto-browserify
 import * as crypto from 'crypto-browserify'
-import * as dotenv from 'dotenv'
 import {
   IDENTITY_VIEW,
   // LOGIN_CONSENT_WEBHOOK_VDXF_KEY,
@@ -10,20 +9,9 @@ import {
   RequestedPermission,
   toBase58Check,
 } from 'verus-typescript-primitives'
-import {VerusIdInterface} from 'verusid-ts-client'
-dotenv.config()
 
-// !GH - move all of this to an env module
-const isDev = process.env.IS_DEV === 'true'
-const iaddress = process.env.IADDRESS as string
-const wif = process.env.WIF as string
-
-const DEFAULT_CHAIN = isDev ? 'VRSCTEST' : 'VRSC'
-const DEFAULT_URL = isDev
-  ? 'https://api.verustest.net'
-  : 'https://api.verus.services'
-
-const idInterface = new VerusIdInterface(DEFAULT_CHAIN, DEFAULT_URL)
+import {env} from '../utils/env'
+import {idInterface} from '../utils/idInterface'
 
 export const generateLoginRequest = async () => {
   console.log('Generating login request at', new Date().toLocaleTimeString())
@@ -35,7 +23,7 @@ export const generateLoginRequest = async () => {
     requested_access: [new RequestedPermission(IDENTITY_VIEW.vdxfid)],
     redirect_uris: [
       new RedirectUri(
-        `${process.env.BASE_URL}/confirm-login`,
+        `${env.BASE_URL}confirm-login`,
         LOGIN_CONSENT_REDIRECT_VDXF_KEY.vdxfid,
       ),
     ],
@@ -44,9 +32,9 @@ export const generateLoginRequest = async () => {
 
   try {
     const req = await idInterface.createLoginConsentRequest(
-      iaddress,
+      env.IADDRESS,
       challenge,
-      wif,
+      env.WIF,
     )
     const uri = req.toWalletDeeplinkUri()
     console.log('Generated URI:', uri)
@@ -55,7 +43,7 @@ export const generateLoginRequest = async () => {
     return {uri} // Return an object containing the URI
   } catch (error) {
     console.error('Error generating login request:', error)
-    console.error('wif: ', wif)
+    console.error('wif: ', env.WIF)
     return {error: 'Failed to generate login request'} // Return an object containing the error
   }
 }

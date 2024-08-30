@@ -17,11 +17,15 @@ export function ConfirmLogin({}: NativeStackScreenProps<
       console.log(url)
 
       const code = url.split('=')[1]
+      console.log('Finding identity, the code is', code)
       const id = await verusAgent.getIdentityFromResponse(code).then(res => res)
+      console.log('setting id')
       setDisplay(id ?? 'no ID')
     }
 
+    console.log('Getting Identity')
     getIdentity()
+    console.log('Got Identity')
   }, [verusAgent])
 
   return (

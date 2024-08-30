@@ -1,8 +1,13 @@
 import express from 'express'
 
-import {generateLoginRequest} from './getLoginRequest'
+import {generateLoginRequest} from '../../lib/requests/generateLoginRequest'
 
 const loginRouter = express.Router()
+
+loginRouter.use((_req, _res, next) => {
+  console.log('Handling via the login router')
+  next()
+})
 
 loginRouter.get('/get-login-request', async (req, res) => {
   try {

@@ -4,8 +4,10 @@ import {
   ContainerImage,
   CpuArchitecture,
   OperatingSystemFamily,
+  Secret,
 } from 'aws-cdk-lib/aws-ecs'
 import {ApplicationLoadBalancedFargateService} from 'aws-cdk-lib/aws-ecs-patterns'
+import {Secret as SSMSecret} from 'aws-cdk-lib/aws-secretsmanager'
 import {Construct} from 'constructs'
 
 export class VerusSocialServerStack extends Stack {
@@ -13,6 +15,12 @@ export class VerusSocialServerStack extends Stack {
     super(scope, id, props)
 
     const cluster = new Cluster(this, 'Cluster')
+
+    const verusSkySecret = SSMSecret.fromSecretCompleteArn(
+      this,
+      'VerusSkySecret',
+      'arn:aws:secretsmanager:us-west-2:559732349516:secret:verusSky-kdWtGY',
+    )
 
     const service = new ApplicationLoadBalancedFargateService(
       this,
@@ -31,6 +39,13 @@ export class VerusSocialServerStack extends Stack {
             file: 'Dockerfile.server',
           }),
           containerPort: 3000,
+          environment: {
+            IS_DEV: 'false',
+          },
+          secrets: {
+            IADDRESS: Secret.fromSecretsManager(verusSkySecret, 'IADDRESS'),
+            WIF: Secret.fromSecretsManager(verusSkySecret, 'WIF'),
+          },
         },
       },
     )
@@ -40,7 +55,7 @@ export class VerusSocialServerStack extends Stack {
     // props are created before the load balancer.
     service.taskDefinition.defaultContainer?.addEnvironment(
       'BASE_URL',
-      service.loadBalancer.loadBalancerDnsName,
+      `http://${service.loadBalancer.loadBalancerDnsName}`,
     )
   }
 }

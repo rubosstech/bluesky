@@ -58,6 +58,10 @@ export class VerusAgent {
   rpcInterface: VerusdRpcInterface
   idInterface: VerusIdInterface
 
+  identity: string | null = null
+
+  subscribers: (() => void)[] = []
+
   lastLoginRequest: Awaited<
     ReturnType<
       InstanceType<typeof VerusIdInterface>['createLoginConsentRequest']
@@ -126,11 +130,25 @@ export class VerusAgent {
       console.log('Identity Name:', idat)
       // session = response.decision.request.challenge.session_id
       // }
+      this.identity = idat
+      this.onIdChange()
     } catch (e) {
       idat = JSON.stringify(e)
     }
 
     return idat
+  }
+
+  subscribe(cb: () => void) {
+    this.subscribers.push(cb)
+  }
+
+  unsubscribe(cb: () => void) {
+    this.subscribers = this.subscribers.filter(sub => sub !== cb)
+  }
+
+  onIdChange() {
+    this.subscribers.forEach(sub => sub())
   }
 
   async decode(code: string) {

@@ -261,6 +261,7 @@ export function FeedPage({
               width: '100%',
               padding: 2,
               marginHorizontal: 'auto',
+              paddingTop: headerOffset + 8,
             }}>
             <Text>
               <Text style={{fontSize: 16, fontWeight: 700, marginRight: 4}}>

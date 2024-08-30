@@ -5,8 +5,6 @@ import {LoginConsentResponse} from 'verus-typescript-primitives'
 import {VerusdRpcInterface} from 'verusd-rpc-ts-client'
 import {VerusIdInterface} from 'verusid-ts-client'
 
-import {IS_DEV} from '#/env'
-
 // TODO - All of these values should be in env
 const ID = {
   identity: {
@@ -41,10 +39,14 @@ const BASE_URL =
   'http://veruss-backe-iwc3sb0kxz6x-1672333311.us-west-2.elb.amazonaws.com/'
 // const BASE_URL = process.env.BASE_URL as string
 
-const DEFAULT_CHAIN = IS_DEV ? 'VRSCTEST' : 'VRSC'
-const DEFAULT_URL = IS_DEV
-  ? 'https://api.verustest.net'
-  : 'https://api.verus.services'
+// For the time being both prod and dev use
+// the test net
+// const DEFAULT_CHAIN = IS_DEV ? 'VRSCTEST' : 'VRSC'
+// const DEFAULT_URL = IS_DEV
+//   ? 'https://api.verustest.net'
+//   : 'https://api.verus.services'
+const DEFAULT_CHAIN = 'VRSCTEST'
+const DEFAULT_URL = 'https://api.verustest.net'
 
 export function createPublicAgent() {
   return VerusAgent.publicAgent()
@@ -113,7 +115,9 @@ export class VerusAgent {
 
     if (isValid) {
       id = await this.rpcInterface.getIdentity(response.signing_id)
+      console.log('Identity Response Is:', id)
       idat = id.result?.identity.name + '@'
+      console.log('Identity Name:', idat)
       // session = response.decision.request.challenge.session_id
     }
 

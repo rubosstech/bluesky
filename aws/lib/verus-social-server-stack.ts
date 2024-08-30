@@ -55,7 +55,7 @@ export class VerusSocialServerStack extends Stack {
     // props are created before the load balancer.
     service.taskDefinition.defaultContainer?.addEnvironment(
       'BASE_URL',
-      service.loadBalancer.loadBalancerDnsName,
+      `http://${service.loadBalancer.loadBalancerDnsName}`,
     )
   }
 }

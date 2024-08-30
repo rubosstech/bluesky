@@ -228,6 +228,7 @@ export function FeedPage({
             marginHorizontal: 'auto',
             width: '100%',
             padding: 8,
+            paddingTop: 8 + headerOffset,
           }}>
           <Text style={{fontWeight: 'bold'}}>Share your Thoughts</Text>
           <input

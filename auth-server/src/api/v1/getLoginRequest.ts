@@ -13,6 +13,7 @@ import {
 import {VerusIdInterface} from 'verusid-ts-client'
 dotenv.config()
 
+// !GH - move all of this to an env module
 const isDev = process.env.IS_DEV === 'true'
 const iaddress = process.env.IADDRESS as string
 const wif = process.env.WIF as string

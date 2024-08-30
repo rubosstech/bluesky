@@ -20,6 +20,7 @@ import {createFullHandle} from '#/lib/strings/handles'
 import {logger} from '#/logger'
 import {useSessionApi} from '#/state/session'
 import {useLoggedOutViewControls} from '#/state/shell/logged-out'
+import {useAgent} from '#/state/verus_session'
 import {useRequestNotificationsPermission} from 'lib/notifications/notifications'
 import {useSetHasCheckedForStarterPack} from 'state/preferences/used-starter-packs'
 import {atoms as a, useTheme} from '#/alf'
@@ -57,6 +58,7 @@ export const LoginForm = ({
   onPressBack: () => void
   onPressForgotPassword: () => void
 }) => {
+  const verusAgent = useAgent()
   const {track} = useAnalytics()
   const t = useTheme()
   const [isProcessing, setIsProcessing] = useState<boolean>(false)
@@ -175,6 +177,15 @@ export const LoginForm = ({
 
   return (
     <FormContainer testID="loginForm" titleText={<Trans>Sign in</Trans>}>
+      <Button
+        label="test verus login"
+        // add black text style
+        style={[t.atoms.bg_contrast_100]}
+        onPress={async () =>
+          console.log(await verusAgent.createLoginConsent())
+        }>
+        <ButtonText>Test Verus Login</ButtonText>
+      </Button>
       <View>
         <TextField.LabelText>
           <Trans>Hosting provider</Trans>

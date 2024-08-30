@@ -26,6 +26,7 @@ export const router = new Router({
   Debug: '/sys/debug',
   DebugMod: '/sys/debug-mod',
   Log: '/sys/log',
+  ConfirmLogin: '/confirm-login',
   AppPasswords: '/settings/app-passwords',
   PreferencesFollowingFeed: '/settings/following-feed',
   PreferencesThreads: '/settings/threads',

@@ -12,9 +12,10 @@ import {SessionAccount, useSession} from '#/state/session'
 import {useLoggedOutView} from '#/state/shell/logged-out'
 import {LoggedOutLayout} from '#/view/com/util/layouts/LoggedOutLayout'
 import {ForgotPasswordForm} from '#/screens/Login/ForgotPasswordForm'
-import {LoginForm} from '#/screens/Login/LoginForm'
 import {PasswordUpdatedForm} from '#/screens/Login/PasswordUpdatedForm'
 import {SetNewPasswordForm} from '#/screens/Login/SetNewPasswordForm'
+// import {LoginForm} from '#/screens/Login/LoginForm'
+import {VerusLoginForm} from '#/screens/Login/VerusLoginForm'
 import {atoms as a} from '#/alf'
 import {ChooseAccountForm} from './ChooseAccountForm'
 import {ScreenTransition} from './ScreenTransition'
@@ -98,15 +99,17 @@ export const Login = ({onPressBack}: {onPressBack: () => void}) => {
   switch (currentForm) {
     case Forms.Login:
       title = _(msg`Sign in`)
-      description = _(msg`Enter your username and password`)
+      description = _(
+        msg`Scan the QR code or click the button below to log in with the Verus Mobile app`,
+      )
       content = (
-        <LoginForm
+        <VerusLoginForm
           error={error}
           serviceUrl={serviceUrl}
           serviceDescription={serviceDescription}
           initialHandle={initialHandle}
           setError={setError}
-          setServiceUrl={setServiceUrl}
+          // setServiceUrl={setServiceUrl}
           onPressBack={() =>
             accounts.length ? gotoForm(Forms.ChooseAccount) : onPressBack()
           }

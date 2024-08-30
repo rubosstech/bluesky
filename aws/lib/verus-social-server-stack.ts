@@ -14,7 +14,6 @@ export class VerusSocialServerStack extends Stack {
 
     const cluster = new Cluster(this, 'Cluster')
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const service = new ApplicationLoadBalancedFargateService(
       this,
       'BackendService',
@@ -34,6 +33,14 @@ export class VerusSocialServerStack extends Stack {
           containerPort: 3000,
         },
       },
+    )
+
+    // Pass the DNS name into the container as an environment variable.
+    // Note that this cannot be done in the definition as the
+    // props are created before the load balancer.
+    service.taskDefinition.defaultContainer?.addEnvironment(
+      'BASE_URL',
+      service.loadBalancer.loadBalancerDnsName,
     )
   }
 }

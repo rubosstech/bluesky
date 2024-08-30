@@ -14,6 +14,7 @@ import {
   NavigationContainer,
   StackActions,
 } from '@react-navigation/native'
+import {useQuery} from '@tanstack/react-query'
 
 import {timeout} from 'lib/async/timeout'
 import {useColorSchemeStyle} from 'lib/hooks/useColorSchemeStyle'
@@ -58,14 +59,17 @@ import {MessagesConversationScreen} from './screens/Messages/Conversation'
 import {MessagesScreen} from './screens/Messages/List'
 import {MessagesSettingsScreen} from './screens/Messages/Settings'
 import {useModalControls} from './state/modals'
+import {STALE} from './state/queries'
 import {useUnreadNotifications} from './state/queries/notifications/unread'
 import {useSession} from './state/session'
 import {
   shouldRequestEmailConfirmation,
   snoozeEmailConfirmationPrompt,
 } from './state/shell/reminders'
+import {useAgent} from './state/verus_session'
 import {AccessibilitySettingsScreen} from './view/screens/AccessibilitySettings'
 import {CommunityGuidelinesScreen} from './view/screens/CommunityGuidelines'
+import {ConfirmLogin} from './view/screens/ConfirmLogin'
 import {CopyrightPolicyScreen} from './view/screens/CopyrightPolicy'
 import {DebugModScreen} from './view/screens/DebugMod'
 import {FeedsScreen} from './view/screens/Feeds'
@@ -349,6 +353,11 @@ function commonScreens(Stack: typeof HomeTab, unreadCountLabel?: string) {
         getComponent={() => Wizard}
         options={{title: title(msg`Edit your starter pack`), requireAuth: true}}
       />
+      <Stack.Screen
+        name="ConfirmLogin"
+        getComponent={() => ConfirmLogin}
+        options={{title: title(msg`ConfirmLogin`)}}
+      />
     </>
   )
 }
@@ -616,6 +625,17 @@ const LINKING = {
 }
 
 function RoutesContainer({children}: React.PropsWithChildren<{}>) {
+  const verusAgent = useAgent()
+  // !SK - Can test functions just by viewing the logs here.
+  const response = useQuery({
+    staleTime: STALE.MINUTES.ONE,
+    queryKey: ['foo', 'bar'],
+    async queryFn() {
+      return verusAgent.getPost()
+    },
+    enabled: true,
+  })
+  console.log('Fake Query:', response)
   const theme = useColorSchemeStyle(DefaultTheme, DarkTheme)
   const {currentAccount} = useSession()
   const {openModal} = useModalControls()

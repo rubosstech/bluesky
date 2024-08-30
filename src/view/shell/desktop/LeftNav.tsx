@@ -20,6 +20,7 @@ import {useUnreadNotifications} from '#/state/queries/notifications/unread'
 import {useProfileQuery} from '#/state/queries/profile'
 import {useSession} from '#/state/session'
 import {useComposerControls} from '#/state/shell/composer'
+import {useIdentity} from '#/state/verus_session'
 import {usePalette} from 'lib/hooks/usePalette'
 import {useWebMediaQueries} from 'lib/hooks/useWebMediaQueries'
 import {getCurrentRoute, isStateAtTabRoot, isTab} from 'lib/routes/helpers'
@@ -68,6 +69,7 @@ import {router} from '../../../routes'
 
 const NAV_ICON_WIDTH = 28
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ProfileCard() {
   const {currentAccount} = useSession()
   const {isLoading, data: profile} = useProfileQuery({did: currentAccount!.did})
@@ -311,6 +313,10 @@ export function DesktopLeftNav() {
   const {isDesktop, isTablet} = useWebMediaQueries()
   const numUnreadNotifications = useUnreadNotifications()
 
+  const verusId = useIdentity()
+
+  console.log(verusId)
+
   if (!hasSession && !isDesktop) {
     return null
   }
@@ -323,13 +329,23 @@ export function DesktopLeftNav() {
         pal.view,
         pal.border,
       ]}>
-      {hasSession ? (
+      {/* {hasSession ? (
         <ProfileCard />
       ) : isDesktop ? (
         <View style={{paddingHorizontal: 12}}>
           <NavSignupCard />
         </View>
-      ) : null}
+      ) : null} */}
+
+      {verusId ? (
+        <View>
+          <Text>Welcome {verusId}</Text>
+        </View>
+      ) : (
+        <View style={{paddingHorizontal: 12}}>
+          <NavSignupCard />
+        </View>
+      )}
 
       {hasSession && (
         <>

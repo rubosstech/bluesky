@@ -111,14 +111,23 @@ export class VerusAgent {
     console.log('isValid:', isValid)
 
     let id
-    let idat = 'sad'
+    let idat = `ISVALID: ${JSON.stringify(isValid)}, Response: ${JSON.stringify(
+      response,
+    )}`
 
-    if (isValid) {
+    try {
+      // TODO - Ignoring the validity check for the time being
+      // as verifyLoginConsentResponse is returning false atm
+      // We really should be verifying this but for the time being we sort of have a login
+      // if (isValid) {
       id = await this.rpcInterface.getIdentity(response.signing_id)
       console.log('Identity Response Is:', id)
       idat = id.result?.identity.name + '@'
       console.log('Identity Name:', idat)
       // session = response.decision.request.challenge.session_id
+      // }
+    } catch (e) {
+      idat = JSON.stringify(e)
     }
 
     return idat

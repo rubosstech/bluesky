@@ -231,7 +231,7 @@ export function FeedPage({
           }}>
           <Text style={{fontWeight: 'bold'}}>Share your Thoughts</Text>
           <input
-            style={{borderColor: 'lightgray', borderRadius: 4, borderWidth: 1}}
+            style={{borderColor: 'gray', borderRadius: 4, borderWidth: 3}}
             onChange={handleChange}
             value={message}
           />
@@ -240,7 +240,7 @@ export function FeedPage({
               disabled={false}
               style={styles.newPostBtn}
               onPress={async () => {
-                await agent.sendPost(verusId ?? 'MbnvDemo2', message)
+                await agent.sendPost(verusId ?? 'MnbvDemo2', message)
                 setMessage('')
               }}
               accessibilityRole="button"

@@ -184,14 +184,18 @@ export class VerusAgent {
     let body = {
       jsonrpc: "1.0",
       id: "curltest",
-      method: "getidentitycontent",
-      params: ["Mbnv@"] 
+      method: "updateidentity",
+      params: [{
+        name:"MnbvDemo2",
+        contentmultimap:{
+          "vrsc::identity.post":{"message":"hello world from the moon!"}}
+      }] 
     }
     const response = await fetch(`http://127.0.0.1:18843`, {
       credentials: 'include',
       method: 'post',
       headers: headers,
-      body: JSON.stringify(getidentitycontentbody)
+      body: JSON.stringify(body)
     }
 )
 

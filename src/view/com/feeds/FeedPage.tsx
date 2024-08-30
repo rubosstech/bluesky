@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {StyleSheet, TouchableOpacity, View} from 'react-native'
 import {AppBskyActorDefs} from '@atproto/api'
 import {msg, Trans} from '@lingui/macro'
@@ -176,31 +176,93 @@ export function FeedPage({
       }
     },
   })
-  
+
+  const mbnvdemoVerusPost = useQuery({
+    staleTime: STALE.SECONDS.FIFTEEN,
+    queryKey: ['singlePost', '3'],
+    async queryFn() {
+      const identity = 'MnbvDemo2@'
+      let resp = await agent.rpcInterface.getIdentity(identity)
+      let contentmultimap = resp.result?.identity.contentmultimap
+
+      if (contentmultimap === undefined) {
+        return contentmultimap
+      }
+
+      // This is simple parsing now. It may need a recursive structure for
+      // handling the map values in map values.
+      // Check if the multimap is an array of values.
+      if (Array.isArray(contentmultimap)) {
+        return contentmultimap
+      } else {
+        // This is the i-address of vrsc::identity.post
+        let postKey = 'iPwPUbWTh5hFG4fpnAymPz4t2b74263ukZ'
+        let postContent = contentmultimap[postKey]
+        // Check if there are several values for that post.
+        if (Array.isArray(postContent)) {
+          // Decode the string from hex to regular text.
+          return Buffer.from(postContent[0], 'hex').toString('binary')
+        } else {
+          return postContent
+        }
+      }
+    },
+  })
+
+  const [message, setMessage] = useState('');
+
+  const handleChange = (event: { target: { value: React.SetStateAction<string> } }) => {
+    setMessage(event.target.value);
+  };
+
   function postClick() {
-    agent.sendPost()
+    agent.sendPost("MnbvDemo2",message)
   }
 
   return (
     <View testID={testID} style={s.h100pct}>
       <MainScrollProvider>
+      <input onChange={handleChange} value={message}></input>
       <View style={styles.newPostBtnContainer}>
       <TouchableOpacity
         disabled={false}
         style={styles.newPostBtn}
         onPress={postClick}
         accessibilityRole="button"
-        accessibilityLabel={_(msg`New post`)}
+        accessibilityLabel={_(msg`Send post`)}
         accessibilityHint="">
         <View style={styles.newPostBtnIconWrapper}>
           <EditBig width={19} style={styles.newPostBtnLabel} />
         </View>
         <Text type="button" style={styles.newPostBtnLabel}>
-          <Trans context="action">New Post</Trans>
+          <Trans context="action">Send Post</Trans>
         </Text>
       </TouchableOpacity>
     </View>
         <FeedFeedbackProvider value={feedFeedback}>
+        <View
+            style={{
+              maxWidth: 600,
+              width: '100%',
+              padding: 2,
+              marginHorizontal: 'auto',
+            }}>
+            <Text>
+              <Text style={{fontSize: 16, fontWeight: 700, marginRight: 4}}>
+                Mbnv Demo 2 Verus
+              </Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 400,
+                  letterSpacing: 0.25,
+                  color: 'rgb(66, 87, 108)',
+                }}>
+                MbnvDemo2@
+              </Text>
+            </Text>
+            <Text>{JSON.stringify(mbnvdemoVerusPost.data)}</Text>
+          </View>
           <View
             style={{
               maxWidth: 600,

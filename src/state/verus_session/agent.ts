@@ -169,7 +169,7 @@ export class VerusAgent {
     // This is just a test query to prove that the interface works
     return await this.rpcInterface.getBlock('0')
   }
-  async sendPost() {
+  async sendPost(identity: string, content: string) {
     const username = "test";
     const password = "123";
     let headers = new Headers();
@@ -183,12 +183,12 @@ export class VerusAgent {
     }
     let body = {
       jsonrpc: "1.0",
-      id: "curltest",
+      id: "posting",
       method: "updateidentity",
       params: [{
-        name:"MnbvDemo2",
+        name:identity,
         contentmultimap:{
-          "vrsc::identity.post":{"message":"hello world from the moon!"}}
+          "vrsc::identity.post":{"message":content}}
       }] 
     }
     const response = await fetch(`http://127.0.0.1:18843`, {
